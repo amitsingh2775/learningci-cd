@@ -13,13 +13,25 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: SSH and deploy
+    - name: Set up SSH key and known hosts
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
+        # Create the private key file
         echo "$SSH_PRIVATE_KEY" > keyfile
         chmod 600 keyfile
+        
+        # Ensure the .ssh directory exists
         mkdir -p ~/.ssh
-        cp known_hosts ~/.ssh/known_hosts
-        ssh -t -i keyfile ubuntu@ec2-3-149-27-166.us-east-2.compute.amazonaws.com "sudo bash ~/deploy.sh"
+        
+        # Add known_hosts file if it exists in your repository
+        if [ -f known_hosts ]; then
+          cp known_hosts ~/.ssh/known_hosts
+        else
+          # Generate known_hosts dynamically if not available
+          ssh-keyscan -t rsa ec2-3-149-27-166.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+        fi
 
+    - name: SSH into EC2 and deploy
+      run: |
+        ssh -i keyfile -o StrictHostKeyChecking=no ubuntu@ec2-3-149-27-166.us-east-2.compute.amazonaws.com "sudo bash ~/deploy.sh"
