@@ -1,0 +1,48 @@
+# Node.js modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.*.local
+
+# Production build output
+/dist
+/build
+
+# Dependency directories
+/bower_components
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# IDE/editor-specific files
+*.swp
+*.swo
+.vscode/
+.idea/
+*.iml
+
+# System-specific files
+.DS_Store
+Thumbs.db
+
+# Temp files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
