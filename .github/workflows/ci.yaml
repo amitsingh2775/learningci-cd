@@ -11,25 +11,19 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Set up SSH key and known hosts
+    - name: Set up SSH and deploy
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
+        # Save private key
         echo "$SSH_PRIVATE_KEY" > keyfile
         chmod 600 keyfile
+        
+        # Set up SSH known hosts
         mkdir -p ~/.ssh
         ssh-keyscan -t rsa ec2-3-149-27-166.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts
 
-    - name: Upload deploy script
-      run: |
-        scp -i keyfile -o StrictHostKeyChecking=no ./deploy.sh ubuntu@ec2-3-149-27-166.us-east-2.compute.amazonaws.com:~/deploy.sh
-
-    - name: Set script permissions
-      run: |
-        ssh -i keyfile -o StrictHostKeyChecking=no ubuntu@ec2-3-149-27-166.us-east-2.compute.amazonaws.com "chmod +x ~/deploy.sh"
-
-    - name: SSH into EC2 and deploy
-      run: |
+        # SSH and run deploy script
         ssh -i keyfile -o StrictHostKeyChecking=no ubuntu@ec2-3-149-27-166.us-east-2.compute.amazonaws.com "sudo bash ~/deploy.sh"
